@@ -1,11 +1,11 @@
-from flask import Flask,Response,request,jsonify
+from flask import Flask,Response,request,jsonify,render_template
 from flask_cors import CORS
 import mysql.connector
 
 app=Flask(__name__)
 cors=CORS(app,resources={"/*":{"origins":"*"}})
 
-db=mysql.connector.connect(host="localhost",port="3306",user="nagendra",password="2338",database="flask")
+db=mysql.connector.connect(host="192.168.12.238",port="3306",user="nagendra",password="2338",database="flask")
 cursor=db.cursor()
 #views
 @app.route('/insert',methods=['POST'])
@@ -55,5 +55,8 @@ def content():
     cursor.execute(query)
     res=cursor.fetchall()
     return jsonify({"contents":res})
+@app.route("/",methods=['GET'])
+def index():
+    return render_template("index.html")
 if(__name__=="__main__"):
-    app.run(debug=True)
+    app.run(debug=True,host="192.168.12.238")

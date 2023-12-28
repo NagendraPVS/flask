@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style type="text/css">
+        form>div>div {
+            display: inline-block;
+        }
+    </style>
+    <title>Flask Form</title>
+</head>
+<body>
+    <form method="post" onsubmit="insert(this);return false">
+        <div>
+            <div>insert</div>
+            <div><input type="text" placeholder="id" name="id" required></div>
+            <div><input type="password" placeholder="password" name="name" required></div>
+            <div><input type="number" placeholder="marks" name="marks" required></div>
+            <div><input type="submit" value="insert" name="name" ></div>
+        </div>
+    </form>
+    <form method="post" onsubmit="update(this);return false">
+        <div>
+            <div>update</div>
+            <div><input type="text" placeholder="id" name="id" required></div>
+            <div><input type="password" placeholder="password" name="password" required></div>
+            <div><input type="number" placeholder="marks" name="marks" required></div>
+            <div><input type="submit" value="update" name="name" ></div>
+        </div>
+    </form>
+
+    <form method="get" onsubmit="deleteRow(this);return false">
+        <div>
+            <div>delete</div>
+            <div>
+                <select name="delete" id="suggestions"> </select>
+        </div>
+        <div><input type="submit" value="delete" name="name" ></div>     
+    </form>
+    <script type="text/javascript">
+
+        function insert(index) {
+         payload={};
+         for(let i=0;i<index.length-1;i++){
+            payload[index[i].name]=index[i].value;
+         }
+         api("insert",payload);
+        }
+
+        function update(index) {
+         payload={};
+         for(let i=0;i<index.length-1;i++){
+            payload[index[i].name]=index[i].value;
+         }
+         api("update",payload);
+        };
+
+        function deleteRow(index){
+            payload="?id='"+index["delete"].value+"'"+"&content";
+            getApi("delete",payload);
+        }
+
+        async function api(url,payload){
+            return fetch("/"+url, {
+                method:"POST",
+                headers: { 'content-type': "application/json" },
+                body: JSON.stringify(payload)
+            }).then((res) => {
+                return res.json();
+            }).then((result) => {
+                try{
+                    if(result.status){
+                        window.alert(result.status);
+
+                    }
+
+                }
+                catch(err){
+                    console.log(err);
+                }
+                return result;
+            });
+        }
+
+        function getApi(url,content){
+            fetch("/"+url+content, {
+                method: "GET",
+                headers: { 'content-type': "application/json" },
+            }).then((res) => {
+                return res.json();
+            }).then((result) => {
+                window.alert(result.status);
+            });
+        }
+
+        api("contents",{}).then((res)=>{
+            console.log(res);
+            content="";
+            for(let i=0;i<res["contents"].length;i++){
+                content+="<option>"+res["contents"][i]+"</option>"
+            }
+            console.log("conetne",content);
+            document.getElementById("suggestions").innerHTML+=content;
+
+        })
+    </script>
+</body>
+</html>
